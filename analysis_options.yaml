@@ -1,0 +1,2 @@
+# 啟用 Flutter 建議的 lint 規則集。
+include: package:flutter_lints/flutter.yaml
