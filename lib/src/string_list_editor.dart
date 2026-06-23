@@ -31,10 +31,10 @@ String joinList(List<String> items, Delimiter delimiter) {
   return items.join(delimiter.value);
 }
 
-/// 字串列表編輯器：以列表呈現，每項皆可輸入編輯；支援新增、刪除、上移、下移。
+/// 字串列表編輯器：以列表呈現，每項皆可輸入編輯；支援新增、刪除與拖放排序。
 ///
-/// 「移到開頭／移到結尾」由**長按**上移／下移按鈕觸發。
-/// 任何變更（含逐字輸入）皆透過 [onChanged] 回報完整的新列表。
+/// 按住每列右側的拖放手把即可拖曳調整順序；任何變更（含逐字輸入）皆透過
+/// [onChanged] 回報完整的新列表。
 class StringListEditor extends StatefulWidget {
   const StringListEditor({
     super.key,
@@ -97,38 +97,19 @@ class _StringListEditorState extends State<StringListEditor> {
     widget.onChanged(_current());
   }
 
-  void _move(int index, int delta) {
-    final target = index + delta;
-    if (target < 0 || target >= _controllers.length) return;
+  /// 拖放排序：把 [oldIndex] 的項目移到 [newIndex]（onReorderItem 已調整索引）。
+  void _onReorder(int oldIndex, int newIndex) {
     setState(() {
-      final c = _controllers.removeAt(index);
-      _controllers.insert(target, c);
-    });
-    widget.onChanged(_current());
-  }
-
-  void _moveToStart(int index) {
-    if (index == 0) return;
-    setState(() {
-      final c = _controllers.removeAt(index);
-      _controllers.insert(0, c);
-    });
-    widget.onChanged(_current());
-  }
-
-  void _moveToEnd(int index) {
-    final last = _controllers.length - 1;
-    if (index == last) return;
-    setState(() {
-      final c = _controllers.removeAt(index);
-      _controllers.add(c);
+      final c = _controllers.removeAt(oldIndex);
+      _controllers.insert(newIndex, c);
     });
     widget.onChanged(_current());
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = widget.localizations ?? StringListEditorLocalizations.of(context);
+    final l10n =
+        widget.localizations ?? StringListEditorLocalizations.of(context);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -166,16 +147,23 @@ class _StringListEditorState extends State<StringListEditor> {
             ),
           )
         else
-          for (int i = 0; i < _controllers.length; i++) _buildRow(l10n, i),
+          ReorderableListView(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            buildDefaultDragHandles: false,
+            onReorderItem: _onReorder,
+            children: [
+              for (int i = 0; i < _controllers.length; i++) _buildRow(l10n, i),
+            ],
+          ),
       ],
     );
   }
 
   Widget _buildRow(StringListEditorLocalizations l10n, int index) {
-    final isFirst = index == 0;
-    final isLast = index == _controllers.length - 1;
-
+    final controller = _controllers[index];
     return Padding(
+      key: ValueKey(controller),
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
@@ -190,26 +178,12 @@ class _StringListEditorState extends State<StringListEditor> {
           // 可輸入的內容
           Expanded(
             child: TextField(
-              controller: _controllers[index],
+              controller: controller,
               decoration: const InputDecoration(isDense: true),
               onChanged: (_) => widget.onChanged(_current()),
             ),
           ),
           const SizedBox(width: 4),
-          // 上移（長按=移到開頭）
-          _moveButton(
-            tooltip: l10n.moveUp,
-            icon: Icons.arrow_upward,
-            onTap: isFirst ? null : () => _move(index, -1),
-            onLongPress: isFirst ? null : () => _moveToStart(index),
-          ),
-          // 下移（長按=移到結尾）
-          _moveButton(
-            tooltip: l10n.moveDown,
-            icon: Icons.arrow_downward,
-            onTap: isLast ? null : () => _move(index, 1),
-            onLongPress: isLast ? null : () => _moveToEnd(index),
-          ),
           // 刪除
           IconButton(
             onPressed: () => _remove(index),
@@ -217,33 +191,22 @@ class _StringListEditorState extends State<StringListEditor> {
             icon: const Icon(Icons.delete_outline,
                 size: 18, color: Color(0xFFD32F2F)),
           ),
-        ],
-      ),
-    );
-  }
-
-  /// 上移／下移按鈕：點擊＝移動一位，長按＝移到開頭／結尾。
-  Widget _moveButton({
-    required String tooltip,
-    required IconData icon,
-    required VoidCallback? onTap,
-    required VoidCallback? onLongPress,
-  }) {
-    final enabled = onTap != null;
-    return Tooltip(
-      message: tooltip,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
-        onLongPress: onLongPress,
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Icon(
-            icon,
-            size: 18,
-            color: enabled ? const Color(0xFF43A047) : const Color(0xFFB0B0B0),
+          // 拖放手把（按住拖曳調整順序，置於刪除按鈕右側）
+          ReorderableDragStartListener(
+            index: index,
+            child: Tooltip(
+              message: l10n.drag,
+              child: const Padding(
+                padding: EdgeInsets.all(8),
+                child: Icon(
+                  Icons.drag_handle,
+                  size: 20,
+                  color: Color(0xFF9EAC9E),
+                ),
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -314,7 +277,8 @@ class _StringListEditorDialogState extends State<_StringListEditorDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = widget.localizations ?? StringListEditorLocalizations.of(context);
+    final l10n =
+        widget.localizations ?? StringListEditorLocalizations.of(context);
     return AlertDialog(
       title: Text(widget.title ?? l10n.defaultTitle),
       content: SingleChildScrollView(

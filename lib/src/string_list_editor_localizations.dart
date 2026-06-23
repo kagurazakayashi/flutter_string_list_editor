@@ -18,10 +18,7 @@ abstract class StringListEditorLocalizations {
   // ---- 工具提示 ----
   String get add;
   String get delete;
-  String get moveUp;
-  String get moveDown;
-  String get moveToStart;
-  String get moveToEnd;
+  String get drag;
 
   // ---- 空態提示 ----
   String get empty;

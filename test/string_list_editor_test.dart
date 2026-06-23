@@ -74,7 +74,7 @@ void main() {
       const l10n = StringListEditorLocalizationsZhCn();
       expect(l10n.add, '新增');
       expect(l10n.delete, '删除');
-      expect(l10n.moveUp, '上移');
+      expect(l10n.drag, '拖动排序');
       expect(l10n.defaultTitle, '编辑列表');
     });
 
@@ -82,14 +82,14 @@ void main() {
       const l10n = StringListEditorLocalizationsZhTw();
       expect(l10n.add, '新增');
       expect(l10n.delete, '刪除');
-      expect(l10n.moveToStart, '移到開頭');
+      expect(l10n.drag, '拖曳排序');
       expect(l10n.confirm, '確定');
     });
 
     test('英文', () {
       const l10n = StringListEditorLocalizationsEn();
       expect(l10n.add, 'Add');
-      expect(l10n.moveDown, 'Move down');
+      expect(l10n.drag, 'Drag to reorder');
       expect(l10n.empty, 'No items');
       expect(l10n.cancel, 'Cancel');
     });

@@ -6,7 +6,7 @@ built-in English / Simplified Chinese / Traditional Chinese localizations.
 
 ## Features
 
-- Visually add / edit / remove / reorder list items (tap moves one, long-press moves to start/end)
+- Visually add / edit / remove / reorder list items (drag the handle to reorder)
 - Configurable delimiter: comma, semicolon, newline, pipe, tab, space, or a custom string
 - `splitList` / `joinList` helpers for converting between delimited text and lists
 - Automatic locale resolution with an optional `localizations` override

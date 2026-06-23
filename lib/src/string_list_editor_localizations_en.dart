@@ -14,16 +14,7 @@ class StringListEditorLocalizationsEn extends StringListEditorLocalizations {
   String get delete => 'Delete';
 
   @override
-  String get moveUp => 'Move up';
-
-  @override
-  String get moveDown => 'Move down';
-
-  @override
-  String get moveToStart => 'Move to start';
-
-  @override
-  String get moveToEnd => 'Move to end';
+  String get drag => 'Drag to reorder';
 
   @override
   String get empty => 'No items';

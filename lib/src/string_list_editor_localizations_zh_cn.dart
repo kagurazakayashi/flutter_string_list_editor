@@ -14,16 +14,7 @@ class StringListEditorLocalizationsZhCn extends StringListEditorLocalizations {
   String get delete => '删除';
 
   @override
-  String get moveUp => '上移';
-
-  @override
-  String get moveDown => '下移';
-
-  @override
-  String get moveToStart => '移到开头';
-
-  @override
-  String get moveToEnd => '移到结尾';
+  String get drag => '拖动排序';
 
   @override
   String get empty => '暂无条目';
