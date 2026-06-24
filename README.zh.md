@@ -43,10 +43,13 @@ final text = await showDelimitedTextEditorDialog(
   delimiter: Delimiter.comma,   // 或 .semicolon / .newline / .pipe / 自定义
 );
 
-// 3) 直接使用 widget
-StringListEditor(
-  items: const ['a', 'b'],
-  onChanged: (list) => print(list),
+// 3) 直接使用 widget（需有界高度）
+SizedBox(
+  height: 300,
+  child: StringListEditor(
+    items: const ['a', 'b'],
+    onChanged: (list) => print(list),
+  ),
 );
 
 // 4) 拆分 / 合并工具函数

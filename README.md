@@ -44,10 +44,13 @@ final text = await showDelimitedTextEditorDialog(
   delimiter: Delimiter.comma,   // or .semicolon / .newline / .pipe / custom
 );
 
-// 3) Use the widget directly
-StringListEditor(
-  items: const ['a', 'b'],
-  onChanged: (list) => print(list),
+// 3) Use the widget directly (needs a bounded height)
+SizedBox(
+  height: 300,
+  child: StringListEditor(
+    items: const ['a', 'b'],
+    onChanged: (list) => print(list),
+  ),
 );
 
 // 4) Split / join helpers

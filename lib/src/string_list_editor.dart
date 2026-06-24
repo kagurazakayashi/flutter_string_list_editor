@@ -112,7 +112,6 @@ class _StringListEditorState extends State<StringListEditor> {
         widget.localizations ?? StringListEditorLocalizations.of(context);
 
     return Column(
-      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // 新增輸入列
@@ -147,14 +146,14 @@ class _StringListEditorState extends State<StringListEditor> {
             ),
           )
         else
-          ReorderableListView(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            buildDefaultDragHandles: false,
-            onReorderItem: _onReorder,
-            children: [
-              for (int i = 0; i < _controllers.length; i++) _buildRow(l10n, i),
-            ],
+          Expanded(
+            child: ReorderableListView(
+              buildDefaultDragHandles: false,
+              onReorderItem: _onReorder,
+              children: [
+                for (int i = 0; i < _controllers.length; i++) _buildRow(l10n, i),
+              ],
+            ),
           ),
       ],
     );
@@ -281,7 +280,9 @@ class _StringListEditorDialogState extends State<_StringListEditorDialog> {
         widget.localizations ?? StringListEditorLocalizations.of(context);
     return AlertDialog(
       title: Text(widget.title ?? l10n.defaultTitle),
-      content: SingleChildScrollView(
+      content: SizedBox(
+        width: 360,
+        height: 360,
         child: StringListEditor(
           items: _items,
           onChanged: (v) => setState(() => _items = v),
